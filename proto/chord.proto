@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package chord;
+
+option go_package = "github.com/anthoturc/chord/proto";
+
+//  Chord service
+//      RPC calls defined in the original chord paper: 
+//      https://pdos.csail.mit.edu/papers/ton:chord/paper-ton.pdf    
+service Chord {
+    rpc FindSuccessor(FindSuccessorRequest) returns (FindSuccessorResponse) {}
+    rpc GetPredecessor(GetPredecessorRequest) returns (GetPredecessorResponse) {}
+    rpc Ping(PingRequest) returns (PingResponse) {}
+}
+
+message FindSuccessorRequest {
+    string key = 1;
+}
+
+message FindSuccessorResponse {
+    string ipAddr = 1;
+}
+
+message GetPredecessorRequest {
+}
+
+message GetPredecessorResponse {
+    string ipAddr = 1;
+}
+
+message PingRequest {
+}
+
+message PingResponse {
+    string message = 1;
+}
