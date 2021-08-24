@@ -14,18 +14,18 @@ service Chord {
 }
 
 message FindSuccessorRequest {
-    string key = 1;
+    string id = 1;
 }
 
 message FindSuccessorResponse {
-    string ipAddr = 1;
+    string address = 1;
 }
 
 message GetPredecessorRequest {
 }
 
 message GetPredecessorResponse {
-    string ipAddr = 1;
+    string address = 1;
 }
 
 message PingRequest {
