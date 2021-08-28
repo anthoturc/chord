@@ -13,8 +13,15 @@ $ make gen
 ```
 
 # Run
-To run
+```
+# Create a chord ring with a single chord node
+$ go run main.go -create
 
+# Add a chord node to an existing ring
+$ go run main.go -join -remote-addr <ip:port>
 ```
-$ go run main.go
-```
+
+# Issues
+The finger table optimization is not currently implemented. So this implementation effectively organizes the nodes into a circular doubly-linked list. The finger table optimization is on the roadmap.
+
+The current implementation does not correctly handle nodes that leave the ring. So far you can successfully add nodes and as long as all nodes are healthy, the system will behave correctly.
