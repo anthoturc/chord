@@ -10,7 +10,8 @@ option go_package = "github.com/anthoturc/chord/proto";
 service Chord {
     rpc FindSuccessor(FindSuccessorRequest) returns (FindSuccessorResponse) {}
     rpc GetPredecessor(GetPredecessorRequest) returns (GetPredecessorResponse) {}
-    rpc Ping(PingRequest) returns (PingResponse) {}
+    rpc Notify(NotifyRequest) returns (NotifyResponse) {}
+		rpc Ping(PingRequest) returns (PingResponse) {}
 }
 
 message FindSuccessorRequest {
@@ -26,6 +27,13 @@ message GetPredecessorRequest {
 
 message GetPredecessorResponse {
     string address = 1;
+}
+
+message NotifyRequest {
+	string address = 1;
+}
+
+message NotifyResponse {
 }
 
 message PingRequest {

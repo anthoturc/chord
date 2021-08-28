@@ -57,3 +57,20 @@ func CallGetPredecessor(remoteAddr string) (string, error) {
 
 	return resp.GetAddress(), nil
 }
+
+func CallNotify(remoteAddr, ipAddr string) error {
+	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	client := pb.NewChordClient(conn)
+
+	_, err = client.Notify(context.Background(), &pb.NotifyRequest{Address: ipAddr})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
