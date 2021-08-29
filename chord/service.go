@@ -119,6 +119,13 @@ func startStabilizingRoutines(node *node.ChordNode) {
 			time.Sleep(2 * time.Second)
 		}
 	}()
+
+	go func() {
+		for {
+			node.FixFingers()
+			time.Sleep(2 * time.Second)
+		}
+	}()
 }
 
 // Adapted from https://stackoverflow.com/a/37382208

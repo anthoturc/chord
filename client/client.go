@@ -2,13 +2,14 @@ package client
 
 import (
 	"context"
+	"time"
 
 	pb "github.com/anthoturc/chord/proto"
 	"google.golang.org/grpc"
 )
 
 func CallPing(remoteAddr string) (string, error) {
-	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(2*time.Second))
 	if err != nil {
 		return "", err
 	}
@@ -16,7 +17,10 @@ func CallPing(remoteAddr string) (string, error) {
 
 	client := pb.NewChordClient(conn)
 
-	resp, err := client.Ping(context.Background(), &pb.PingRequest{})
+	ctx, cancel := getContext()
+	defer cancel()
+
+	resp, err := client.Ping(ctx, &pb.PingRequest{})
 	if err != nil {
 		return "", err
 	}
@@ -25,7 +29,7 @@ func CallPing(remoteAddr string) (string, error) {
 }
 
 func CallFindSuccessor(remoteAddr, id string) (string, error) {
-	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(2*time.Second))
 	if err != nil {
 		return "", err
 	}
@@ -33,7 +37,10 @@ func CallFindSuccessor(remoteAddr, id string) (string, error) {
 
 	client := pb.NewChordClient(conn)
 
-	resp, err := client.FindSuccessor(context.Background(), &pb.FindSuccessorRequest{Id: id})
+	ctx, cancel := getContext()
+	defer cancel()
+
+	resp, err := client.FindSuccessor(ctx, &pb.FindSuccessorRequest{Id: id})
 	if err != nil {
 		return "", err
 	}
@@ -42,7 +49,7 @@ func CallFindSuccessor(remoteAddr, id string) (string, error) {
 }
 
 func CallGetPredecessor(remoteAddr string) (string, error) {
-	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(2*time.Second))
 	if err != nil {
 		return "", err
 	}
@@ -50,7 +57,10 @@ func CallGetPredecessor(remoteAddr string) (string, error) {
 
 	client := pb.NewChordClient(conn)
 
-	resp, err := client.GetPredecessor(context.Background(), &pb.GetPredecessorRequest{})
+	ctx, cancel := getContext()
+	defer cancel()
+
+	resp, err := client.GetPredecessor(ctx, &pb.GetPredecessorRequest{})
 	if err != nil {
 		return "", err
 	}
@@ -59,7 +69,7 @@ func CallGetPredecessor(remoteAddr string) (string, error) {
 }
 
 func CallNotify(remoteAddr, ipAddr string) error {
-	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(2*time.Second))
 	if err != nil {
 		return err
 	}
@@ -67,10 +77,17 @@ func CallNotify(remoteAddr, ipAddr string) error {
 
 	client := pb.NewChordClient(conn)
 
-	_, err = client.Notify(context.Background(), &pb.NotifyRequest{Address: ipAddr})
+	ctx, cancel := getContext()
+	defer cancel()
+
+	_, err = client.Notify(ctx, &pb.NotifyRequest{Address: ipAddr})
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func getContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), 3*time.Second)
 }
