@@ -40,7 +40,7 @@ func CallFindSuccessor(remoteAddr, id string) (string, error) {
 	ctx, cancel := getContext()
 	defer cancel()
 
-	resp, err := client.FindSuccessor(ctx, &pb.FindSuccessorRequest{Id: id})
+	resp, err := client.FindSuccessor(ctx, &pb.FindSuccessorRequest{Key: id})
 	if err != nil {
 		return "", err
 	}

@@ -42,7 +42,7 @@ func New(ipAddr string) *ChordNode {
 
 // Methods from Figure 6 of Chord paper
 func (n *ChordNode) Join(remoteAddr string) error {
-	successorAddr, err := client.CallFindSuccessor(remoteAddr, n.ID.String())
+	successorAddr, err := client.CallFindSuccessor(remoteAddr, n.IpAddr)
 	if err != nil {
 		return err
 	}
@@ -54,14 +54,15 @@ func (n *ChordNode) Join(remoteAddr string) error {
 	return nil
 }
 
-func (n *ChordNode) FindSuccessor(id *big.Int) (string, error) {
+func (n *ChordNode) FindSuccessor(key string) (string, error) {
 	localSuccessor := n.Successors[1]
+	id := hash.Hash(key)
 	if hash.IsBetween(n.ID, id, localSuccessor.ID, true) {
 		return localSuccessor.IpAddr, nil
 	}
 
 	// TODO: Make use of closest_preceding_node (and finger tables) as defined in Chord paper
-	remoteSuccessorIpAddr, err := client.CallFindSuccessor(localSuccessor.IpAddr, id.String())
+	remoteSuccessorIpAddr, err := client.CallFindSuccessor(localSuccessor.IpAddr, key)
 	if err != nil {
 		return "", err
 	}
@@ -79,8 +80,9 @@ func (n *ChordNode) Notify(predecessorAddr string) {
 
 // Run periodically to refresh the finger table entries
 func (n *ChordNode) FixFingers() {
-	successor, err := n.FindSuccessor(n.ID)
+	successor, err := n.FindSuccessor(n.IpAddr)
 	if err != nil {
+		n.Successors[1] = n
 		return
 	}
 

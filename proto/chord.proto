@@ -15,7 +15,7 @@ service Chord {
 }
 
 message FindSuccessorRequest {
-    string id = 1;
+    string key = 1;
 }
 
 message FindSuccessorResponse {

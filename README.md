@@ -12,6 +12,25 @@ Note: This target assumes you have followed the [guide](https://grpc.io/docs/lan
 $ make gen
 ```
 
+# Usage
+```
+// Start the Chord RPC Server
+chordConfig := &ChordServerConfig{
+	Create: 					true,
+	Join: 						false,
+	RemoteNodeIpAddr: "0.0.0.0:8080"
+}
+
+node, s := chord.Init(chordCofig)
+
+...
+
+node.DumpNodeInfo()
+
+
+s.GracefulStop()
+```
+
 # Run
 ```
 # Create a chord ring with a single chord node

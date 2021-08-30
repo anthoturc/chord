@@ -8,7 +8,6 @@ import (
 	"net"
 	"time"
 
-	"github.com/anthoturc/chord/hash"
 	"github.com/anthoturc/chord/node"
 
 	pb "github.com/anthoturc/chord/proto"
@@ -24,7 +23,8 @@ type ChordServerConfig struct {
 type ChordServer struct {
 	// TODO: Add fields that the server will need here
 	// e.g this could be data base connections
-	Node *node.ChordNode
+	node   *node.ChordNode
+	server *grpc.Server
 
 	// Comment taken from generated gRPC
 	// All implementations must embed UnimplementedChordServer
@@ -38,13 +38,13 @@ func (s *ChordServer) Ping(ctx context.Context, req *pb.PingRequest) (*pb.PingRe
 }
 
 func (s *ChordServer) FindSuccessor(ctx context.Context, req *pb.FindSuccessorRequest) (*pb.FindSuccessorResponse, error) {
-	localNode := s.Node
-	successorAddr, err := localNode.FindSuccessor(hash.Hash(req.GetId()))
+	localNode := s.node
+	successorAddr, err := localNode.FindSuccessor(req.GetKey())
 	return &pb.FindSuccessorResponse{Address: successorAddr}, err
 }
 
 func (s *ChordServer) GetPredecessor(ctx context.Context, req *pb.GetPredecessorRequest) (*pb.GetPredecessorResponse, error) {
-	localNode := s.Node
+	localNode := s.node
 	if localNode.Predecessor == nil {
 		return nil, errors.New("no predecessor for this node")
 	}
@@ -53,7 +53,7 @@ func (s *ChordServer) GetPredecessor(ctx context.Context, req *pb.GetPredecessor
 }
 
 func (s *ChordServer) Notify(ctx context.Context, req *pb.NotifyRequest) (*pb.NotifyResponse, error) {
-	localNode := s.Node
+	localNode := s.node
 	localNode.Notify(req.GetAddress())
 
 	return &pb.NotifyResponse{}, nil
@@ -61,8 +61,29 @@ func (s *ChordServer) Notify(ctx context.Context, req *pb.NotifyRequest) (*pb.No
 
 ////
 
+//// Lookup API provided by the chord protocol
+func (s *ChordServer) Lookup(key string) (string, error) {
+	localNode := s.node
+	ipAddr, err := localNode.FindSuccessor(key)
+	if err != nil {
+		return "", err
+	}
+	return ipAddr, nil
+}
+
+//// Access to the underlying ChordNode
+func (s *ChordServer) DumpInfo() string {
+	return s.node.DumpNodeInfo()
+}
+
+func (s *ChordServer) Stop() {
+	s.server.GracefulStop()
+}
+
 //// Chord service initialization
-func Init(config *ChordServerConfig) (*node.ChordNode, *grpc.Server) {
+func Init(config *ChordServerConfig) *ChordServer {
+	config.validate()
+
 	ip := getOutBoundAddr()
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s:0", ip))
@@ -74,7 +95,6 @@ func Init(config *ChordServerConfig) (*node.ChordNode, *grpc.Server) {
 	ipAddrAndPort := fmt.Sprintf("%s:%d", ip, port)
 	node := node.New(ipAddrAndPort)
 
-	config.validate()
 	if config.Create { // on create set the successor to itself.
 		log.Println("Creating new ChordRing...")
 		node.Successors[1] = node
@@ -87,12 +107,13 @@ func Init(config *ChordServerConfig) (*node.ChordNode, *grpc.Server) {
 	}
 
 	s := grpc.NewServer()
-	pb.RegisterChordServer(s, &ChordServer{Node: node})
+	chordServer := &ChordServer{node: node, server: s}
+	pb.RegisterChordServer(s, chordServer)
 	log.Printf("Staring up ChordServer on: %s\n", ipAddrAndPort)
 	startGrpcServer(s, lis, ipAddrAndPort)
 	startStabilizingRoutines(node)
 
-	return node, s
+	return chordServer
 }
 
 //// Package private helpers
