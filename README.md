@@ -16,8 +16,8 @@ $ make gen
 ```
 // Start the Chord RPC Server
 chordConfig := &ChordServerConfig{
-	Create: 					true,
-	Join: 						false,
+	Create: true,
+	Join: false,
 	RemoteNodeIpAddr: "0.0.0.0:8080"
 }
 
@@ -48,3 +48,9 @@ $ go run main.go -join -remote-addr <ip:port>
 
 # Issues
 The finger table optimization is not currently implemented. So this implementation effectively organizes the nodes into a circular doubly-linked list. The finger table optimization is on the roadmap.
+
+# TODO:
+If a node joins the chord ring it should reach out to its successor to get all of its data. This can be done by having the new node paginate through all of its successor's data (sorted by ID) until a given returned ID > n.ID.
+
+If a node leaves the chord ring it should reach out to its successor to put all of its data.
+This can be done by having the leaving node batch put all of its data onto the successor node.

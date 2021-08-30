@@ -8,25 +8,29 @@ option go_package = "github.com/anthoturc/chord/proto";
 //      RPC calls defined in the original chord paper: 
 //      https://pdos.csail.mit.edu/papers/ton:chord/paper-ton.pdf    
 service Chord {
-    rpc FindSuccessor(FindSuccessorRequest) returns (FindSuccessorResponse) {}
-    rpc GetPredecessor(GetPredecessorRequest) returns (GetPredecessorResponse) {}
-    rpc Notify(NotifyRequest) returns (NotifyResponse) {}
-		rpc Ping(PingRequest) returns (PingResponse) {}
+	rpc FindSuccessor(FindSuccessorRequest) returns (FindSuccessorResponse) {}
+	rpc GetPredecessor(GetPredecessorRequest) returns (GetPredecessorResponse) {}
+	rpc Notify(NotifyRequest) returns (NotifyResponse) {}
+	rpc Ping(PingRequest) returns (PingResponse) {}
+	// TODO: implement paginated API to get all data from successor when node joins
+	rpc ListKVPairs(ListKVPairsRequest) returns (ListKVPairsResponse) {}
+	// TODO: implemenbt BatchPut API to put all data from current node to successor when node leaves
+	rpc BatchPutKVPairs(BatchPutKVPairsRequest) returns (BatchPutKVPairsResponse) {}
 }
 
 message FindSuccessorRequest {
-    string key = 1;
+	string key = 1;
 }
 
 message FindSuccessorResponse {
-    string address = 1;
+	string address = 1;
 }
 
 message GetPredecessorRequest {
 }
 
 message GetPredecessorResponse {
-    string address = 1;
+	string address = 1;
 }
 
 message NotifyRequest {
@@ -40,5 +44,27 @@ message PingRequest {
 }
 
 message PingResponse {
-    string message = 1;
+	string message = 1;
+}
+
+message KVPair {
+	string key = 1;
+	string value = 2;
+}
+
+message ListKVPairsRequest {
+	string nextToken = 1;
+	int32 pageSize = 2;
+}
+
+message ListKVPairsResponse {
+	string nextToken = 1;
+	repeated KVPair kvPairs = 2;
+}
+
+message BatchPutKVPairsRequest {
+	repeated KVPair kvPairs = 1;
+}
+
+message BatchPutKVPairsResponse {
 }
