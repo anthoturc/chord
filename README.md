@@ -21,11 +21,17 @@ chordConfig := &ChordServerConfig{
 	RemoteNodeIpAddr: "0.0.0.0:8080"
 }
 
-node, s := chord.Init(chordCofig)
+chord := chord.Init(chordCofig)
 
 ...
 
-node.DumpNodeInfo()
+chord.DumpInfo()
+
+...
+
+addr, err := chord.Lookup(key)
+
+...
 
 
 s.GracefulStop()
