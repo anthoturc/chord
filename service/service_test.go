@@ -1,4 +1,4 @@
-package chord
+package service
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 func TestFindSuccessor(t *testing.T) {
 	s := &ChordServer{}
 
-	resp, err := s.FindSuccessor(context.Background(), &pb.FindSuccessorRequest{Id: "someid"})
+	resp, err := s.FindSuccessor(context.Background(), &pb.FindSuccessorRequest{Key: "someid"})
 	if err != nil {
 		t.Errorf("FindSuccessor returned unexpected err: %v\n", err)
 	}

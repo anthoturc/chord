@@ -20,14 +20,6 @@ type ChordNode struct {
 
 	Predecessor *ChordNode
 	Successors  []*ChordNode
-	// TODO: Add finger table after inefficient solution is
-	// complete
-
-	// TODO: To support applications ontop of Chord we
-	// need some mechanism for storage. For now this can be a simple
-	// map[string]string but it could be more complicated
-	// It is very likely that we would need to orchestrate access to the
-	// data store
 }
 
 func New(ipAddr string) *ChordNode {

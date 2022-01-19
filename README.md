@@ -1,14 +1,21 @@
 # Chord
-Implementation of the p2p chord protocol in Golang
+Implementation of the p2p chord algorithm in Golang.
+
+This is a client library that is meant to be consumed by other applications.
 
 # Paper
 The implemenation is basd off the design/protocol brought up in https://pdos.csail.mit.edu/papers/ton:chord/paper-ton.pdf
 
 # Generate Golang gRPC files
 
-Note: This target assumes you have followed the [guide](https://grpc.io/docs/languages/go/quickstart/) to install grpc plugins and updated your PATH
+
+Note: This target assumes you have followed the [guide](https://grpc.io/docs/languages/go/quickstart/) to install grpc plugins and updated your PATH. We are using plugins for APIv2. See more here: https://pkg.go.dev/google.golang.org/protobuf/cmd/protoc-gen-go
+
+Specifically you should have the newer protoc-gen-go and protoc-gen-grpc-go plugins installed. You can check these out at https://pkg.go.dev/
+
  
 ```
+$ export PATH=$PATH:$(go env GOPATH)/bin # maybe it's already on your path (:
 $ make gen
 ```
 
@@ -21,15 +28,15 @@ chordConfig := &ChordServerConfig{
 	RemoteNodeIpAddr: "0.0.0.0:8080"
 }
 
-chord := chord.Init(chordCofig)
+node := service.Init(chordCofig)
 
 ...
 
-chord.DumpInfo()
+node.DumpInfo()
 
 ...
 
-addr, err := chord.Lookup(key)
+addr, err := node.Lookup(key)
 
 ...
 

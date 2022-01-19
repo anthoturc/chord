@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/anthoturc/chord/chord"
+	"github.com/anthoturc/chord/service"
 )
 
 func main() {
@@ -14,8 +14,8 @@ func main() {
 	remoteNodeIpAddr := flag.String("remote-addr", "", "The address of any node on an existing Chord ring. This is ignored if the create flag is specified")
 	flag.Parse()
 
-	chord := chord.Init(
-		&chord.ChordServerConfig{
+	chord := service.Init(
+		&service.ChordServerConfig{
 			Create:           *create,
 			Join:             *join,
 			RemoteNodeIpAddr: *remoteNodeIpAddr,
@@ -44,5 +44,5 @@ func main() {
 		}
 	}
 
-	chordServer.Stop()
+	chord.Stop()
 }

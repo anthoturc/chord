@@ -1,4 +1,4 @@
-package chord
+package service
 
 import (
 	"context"
