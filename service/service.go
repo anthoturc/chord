@@ -21,8 +21,6 @@ type ChordServerConfig struct {
 }
 
 type ChordServer struct {
-	// TODO: Add fields that the server will need here
-	// e.g this could be data base connections
 	node   *node.ChordNode
 	server *grpc.Server
 

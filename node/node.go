@@ -47,7 +47,7 @@ func (n *ChordNode) Join(remoteAddr string) error {
 }
 
 func (n *ChordNode) FindSuccessor(key string) (string, error) {
-	localSuccessor := n.Successors[1]
+	localSuccessor := n.Successors[1] // Potentially invalid information since this successor may not exist later
 	id := hash.Hash(key)
 	if hash.IsBetween(n.ID, id, localSuccessor.ID, true) {
 		return localSuccessor.IpAddr, nil

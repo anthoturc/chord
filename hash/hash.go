@@ -5,12 +5,13 @@ import (
 	"math/big"
 )
 
+const M = 100
+
 func Hash(key string) *big.Int {
 	sha := sha1.New()
 	sha.Write([]byte(key))
 	id := new(big.Int).SetBytes(sha.Sum(nil))
-	// TODO: Do not use a % 100 (this is just for local testing)
-	return id.Mod(id, big.NewInt(100))
+	return id.Mod(id, big.NewInt(M))
 }
 
 // Helper method to see if a given id is between start and end while accounting
