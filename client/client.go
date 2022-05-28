@@ -8,8 +8,10 @@ import (
 	"google.golang.org/grpc"
 )
 
+const TIMEOUT = 1 * time.Minute
+
 func CallPing(remoteAddr string) (string, error) {
-	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(2*time.Second))
+	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(TIMEOUT))
 	if err != nil {
 		return "", err
 	}
@@ -29,7 +31,7 @@ func CallPing(remoteAddr string) (string, error) {
 }
 
 func CallFindSuccessor(remoteAddr, id string) (string, error) {
-	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(2*time.Second))
+	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(TIMEOUT))
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +51,7 @@ func CallFindSuccessor(remoteAddr, id string) (string, error) {
 }
 
 func CallGetPredecessor(remoteAddr string) (string, error) {
-	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(2*time.Second))
+	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(TIMEOUT))
 	if err != nil {
 		return "", err
 	}
@@ -69,7 +71,7 @@ func CallGetPredecessor(remoteAddr string) (string, error) {
 }
 
 func CallNotify(remoteAddr, ipAddr string) error {
-	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(2*time.Second))
+	conn, err := grpc.Dial(remoteAddr, grpc.WithInsecure(), grpc.WithTimeout(TIMEOUT))
 	if err != nil {
 		return err
 	}
@@ -89,5 +91,5 @@ func CallNotify(remoteAddr, ipAddr string) error {
 }
 
 func getContext() (context.Context, context.CancelFunc) {
-	return context.WithTimeout(context.Background(), 3*time.Second)
+	return context.WithTimeout(context.Background(), TIMEOUT)
 }

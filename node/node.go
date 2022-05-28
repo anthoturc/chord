@@ -7,6 +7,8 @@ import (
 	"github.com/anthoturc/chord/hash"
 )
 
+const R = 2
+
 // Represents the chord node as described
 // in the Chord paper.
 type ChordNode struct {
@@ -18,16 +20,16 @@ type ChordNode struct {
 	// The expected format of this field is IP:PORT
 	IpAddr string
 
+	// This state is mutable.
 	Predecessor *ChordNode
 	Successors  []*ChordNode
 }
 
 func New(ipAddr string) *ChordNode {
 	return &ChordNode{
-		ID:     hash.Hash(ipAddr),
-		IpAddr: ipAddr,
-		// Using 1-based indexing and temporarily only using 1 successor
-		Successors:  make([]*ChordNode, 2),
+		ID:          hash.Hash(ipAddr),
+		IpAddr:      ipAddr,
+		Successors:  make([]*ChordNode, R),
 		Predecessor: nil,
 	}
 }
@@ -53,7 +55,6 @@ func (n *ChordNode) FindSuccessor(key string) (string, error) {
 		return localSuccessor.IpAddr, nil
 	}
 
-	// TODO: Make use of closest_preceding_node (and finger tables) as defined in Chord paper
 	remoteSuccessorIpAddr, err := client.CallFindSuccessor(localSuccessor.IpAddr, key)
 	if err != nil {
 		return "", err
